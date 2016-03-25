@@ -9,6 +9,7 @@
 from peewee import *
 from config import config
 
+
 # Define the database object which is imported
 # by modules and controllers
 try:
@@ -29,7 +30,7 @@ elif db_type == 'postgresql':
         config['DB']['name'],
         host=config['DB']['host'],
         user=config['DB']['user'],
-        passwd=config['DB']['password']
+        password=config['DB']['password']
     )
 else:
     DATABASE = SqliteDatabase(':memory:')

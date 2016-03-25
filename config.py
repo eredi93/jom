@@ -10,6 +10,7 @@ import sys
 import os
 import configparser
 
+
 # convert config true string to bool
 def str2bool(str):
     if str.lower() in ['true', 't', 'yes', 'y']:
@@ -27,12 +28,14 @@ APP_DIR = BASE_DIR + "/app"
 
 # Parse config file
 config = configparser.ConfigParser()
-config_file = BASE_DIR + "/" + MODE + ".ini"
+config_file = APP_DIR + "/settings/" + MODE + ".ini"
 if os.path.isfile(config_file):
     # Read config
     config.read(config_file)
     # Set debug var
     debug = str2bool(config['APP']['DEBUG'])
+else:
+    debug = False
 
 # exit if config is empty
 if len(config.sections()) == 0:

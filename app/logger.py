@@ -5,6 +5,7 @@ import logging
 from .database import DATABASE, Model, PrimaryKeyField, DateTimeField, \
                          CharField, TextField
 
+
 # Peewee Logger Model
 class Logger(Model):
     """Syslog model"""
@@ -19,6 +20,7 @@ class Logger(Model):
 
     class Meta:
         database = DATABASE
+
 
 # Logging Handler Peewee
 class PeeweeHandler(logging.Handler):
@@ -71,6 +73,7 @@ class PeeweeHandler(logging.Handler):
             line_number=record.lineno
         )
 
+
 # Set Name and level to logger
 def set_logger(logger_name, level='INFO'):
     """ Set logger
@@ -94,6 +97,7 @@ def set_logger(logger_name, level='INFO'):
         logger.setLevel(logging.DEBUG)
     else:
         pass
+
 
 # Get logger from name and set level
 def get_logger(logger_name, level='INFO'):
@@ -119,6 +123,7 @@ def get_logger(logger_name, level='INFO'):
     else:
         pass
     return logger
+
 
 # Setup the database table using Peewee
 def init_logger_models():

@@ -1,0 +1,59 @@
+{% extends "index.html" %}
+
+{% block main_content %}
+<div class="row">
+    <div class="col m12 l6">
+        <div class="card">
+            <form action="{{ url_for('users.my_profile') }}" method="post" autocomplete="off">
+                <div class="card-content">
+                    <span class="card-title">Update profile</span>
+                    <div class="row">
+                    {{ form_u.csrf_token }}
+                    {% for field in form_u %}
+                    {% if field.name != "csrf_token" %}
+                        <div class="input-field col s12">
+                            {% if field.errors %}{{ field(class="invalid") }}{% else %}{{ field(class="") }}{% endif %}
+                            <label for="{{ field.id }}">{{ field.label.text }}</label>
+                            {% if field.errors %}<span class="error-message">{% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+                <div class="card-action">
+                    <div class="row">
+                        <button class="btn orange waves-effect waves-light right" type="submit">Update<i class="material-icons right">send</i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col m12 l6">
+        <div class="card">
+            <form action="{{ url_for('users.change_password') }}" method="post" autocomplete="off">
+                <div class="card-content">
+                    <span class="card-title">Change password</span>
+                    <div class="row">
+                    {{ form_pw.csrf_token }}
+                    {% for field in form_pw %}
+                    {% if field.name != "csrf_token" %}
+                        <div class="input-field col s12">
+                            {% if field.errors %}{{ field(class="invalid") }}{% else %}{{ field(class="") }}{% endif %}
+                            <label for="{{ field.id }}">{{ field.label.text }}</label>
+                            {% if field.errors %}<span class="error-message">{% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+                <div class="card-action">
+                    <div class="row">
+                        <button class="btn orange waves-effect waves-light right" type="submit">Change<i class="material-icons right">send</i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}{% endblock %}

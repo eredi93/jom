@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<div class="login-background">
+    <div class="flash-container">{% with messages = get_flashed_messages(with_categories=True) %}{% if messages %}{% for category, message in messages %}
+        <div class="flash {{ category }}" id="flash-message">
+            <a href="javascript:void(0)" class="flash-dismiss"><i class="fa fa-times fa-lg"></i></a>
+            <h3>{{message}}</h3>
+        </div>
+    {% endfor %}{% endif %}{% endwith %}</div>
+    <div class="container login">
+        <div class="row">
+            <div class="col m6 l4 offset-l4 offset-m3 offset-s1.5">
+                <div class="card medium blue-grey-lighten-5 darken-1">
+                    <div class="card-image login">
+                      <img class="login-image" src="/static/img/jom_80x200.png">
+                    </div>
+                    <form action="" method="post" autocomplete="off">
+                        <div class="card-content black-text row login">
+                        {{ form.csrf_token }}
+                        {% for field in form %}
+                        {% if field.name != "csrf_token" %}
+                            <div class="input-field col s12">
+                                {% if field.errors %}{{ field(class="invalid") }}{% else %}{{ field(class="") }}{% endif %}
+                                <label for="{{ field.id }}">{{ field.label.text }}</label>
+                                {% if field.errors %}<span class="error-message">{% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+                            </div>
+                        {% endif %}
+                        {% endfor %}
+                        </div>
+                        <div class="card-action">
+                            <button class="btn orange waves-effect waves-light right" type="submit">Login<i class="material-icons right">send</i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="login-footer">
+            <p>Jacopo Scrinzi 2016</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

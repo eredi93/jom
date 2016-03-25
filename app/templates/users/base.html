@@ -1,0 +1,77 @@
+{% extends 'index.html' %}
+
+{% block main_content %}
+<div class="row">
+    <div class="col s12">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Manage users</span>
+                <table class="responsive-table highlight centered">
+                    <thead>
+                        <tr>
+                            <th data-field="id">Username</th>
+                            <th data-field="name">Email</th>
+                            <th data-field="price">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <div>
+                                {% if current_user.is_admin %}
+                                    <a id="{{ user.id }}" data-target="delete-user-modal" class="btn-floating red delete-trigger" title="Delete"><i class="material-icons">delete</i></a>
+                                    {% if user.is_admin %}<a  id="{{ user.id }}" data-target="unset-admin-user-modal" class="btn-floating blue-grey unset-admin-trigger" title="Remove Admin"><i class="material-icons">restore</i></a>
+                                    {% else %}<a  id="{{ user.id }}" data-target="set-admin-user-modal" class="btn-floating green set-admin-trigger" title="Make Admin"><i class="material-icons">code</i></a>{% endif %}
+                                {% endif %}
+                                    <a href="malito:{{ user.email }}" class="btn-floating yellow darken-1" title="Send Email"><i class="material-icons">message</i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-action">
+                <button data-target="add-user-modal" class="btn orange waves-effect waves-light add-user-trigger">Add User</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Structure -->
+<div id="add-user-modal" class="modal"></div>
+{% if current_user.is_admin %}
+<div id="delete-user-modal" class="modal"></div>
+<div id="set-admin-user-modal" class="modal"></div>
+<div id="unset-admin-user-modal" class="modal"></div>
+{% endif %}
+{% endblock %}
+{% block js %}
+<script>
+$(document).ready(function() {
+    $('.add-user-trigger').leanModal({
+        ready: function() { $('#add-user-modal').load('{{ url_for('users.register') }}'); },
+        complete: function() { location.reload();}
+    });
+    {% if current_user.is_admin %}
+    $('.delete-trigger').leanModal({ complete: function() { location.reload();} }).on('click', function(e) {
+        var user = e.currentTarget.id;
+        $('#delete-user-modal').empty().load('{{ url_for('users.delete') }}?user=' + user)
+    });
+    $('.set-admin-trigger').leanModal({ complete: function() { location.reload();} }).on('click', function(e) {
+        var user = e.currentTarget.id;
+        $('#set-admin-user-modal').empty().load('{{ url_for('users.set_admin') }}?user=' + user)
+    });
+    $('.unset-admin-trigger').leanModal({ complete: function() { location.reload();} }).on('click', function(e) {
+        var user = e.currentTarget.id;
+        $('#unset-admin-user-modal').empty().load('{{ url_for('users.unset_admin') }}?user=' + user)
+    });
+    {% endif %}
+
+    $(".button-collapse").sideNav();
+    $('select').material_select();
+});
+</script>
+{% endblock %}

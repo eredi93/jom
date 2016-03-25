@@ -1,0 +1,68 @@
+<form id="register-user" action="" method="post" autocomplete="off">
+    <div class="modal-content">
+        <h4>Register new user</h4>
+    {{ form.csrf_token }}
+    {% for field in form %}
+    {% if field.name != "csrf_token" %}
+        <div class="input-field">
+            {% if field.errors %}{{ field(class="invalid") }}{% else %}{{ field(class="") }}{% endif %}
+            <label for="{{ field.id }}">{{ field.label.text }}</label>
+            {% if field.errors %}<span class="error-message">{% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+        </div>
+    {% endif %}
+    {% endfor %}
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn orange waves-effect waves-light">Submit</button>
+    </div>
+</form>
+
+<script>
+$(document).ready(function() {
+    $('#register-user').submit(function(event){
+        // Stop form from submitting normally
+        event.preventDefault();
+
+        $('#add-user-modal').empty().html(
+            '<div class="loading">' +
+                '<p>In progress...</p>' +
+                '<div class="preloader-wrapper small active">' +
+                    '<div class="spinner-layer spinner-blue-only">' +
+                        '<div class="circle-clipper left">' +
+                            '<div class="circle"></div>' +
+                        '</div>' +
+                        '<div class="gap-patch">' +
+                            '<div class="circle"></div>' +
+                        '</div>' +
+                        '<div class="circle-clipper right">' +
+                            '<div class="circle"></div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>'
+        );
+
+        // Send the data using post
+        var $form = $( this ),
+            csrf_token = $form.find( "input[name='csrf_token']" ).val(),
+            username = $form.find( "input[name='username']" ).val(),
+            email = $form.find( "input[name='email']" ).val(),
+            password = $form.find( "input[name='password']" ).val(),
+            password_confirm = $form.find( "input[name='password_confirm']" ).val();
+        var posting = $.post("{{ url_for('users.register') }}", {
+            username: username,
+            email: email,
+            password: password,
+            password_confirm: password_confirm,
+            csrf_token: csrf_token
+        });
+
+        // Put the results in a div
+        posting.done(function (data) {
+            $('#add-user-modal').empty().html(
+                data
+            );
+        });
+    });
+});
+</script>
