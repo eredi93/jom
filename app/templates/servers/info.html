@@ -1,0 +1,25 @@
+<div class="modal-content">
+    <h4>Server info</h4>
+    <div class="server-card-info">
+        <ul>
+            <li>Server Name:</li>
+            <li>Server Host:</li>
+            <li>Connected User:</li>
+            <li>Update Time:</li>
+        </ul>
+        <ul>
+            <li>{{ server.name }}</li>
+            <li>{{ server.host }}:{{ server.port }}</li>
+            <li>{{ server.connected }}</li>
+            <li>{{ server.update_time }}</li>
+        </ul>
+    </div>
+</div>
+<div class="modal-footer">
+    <a id="close-btn" class="btn orange waves-effect waves-light">Close</a>
+</div>
+<script>
+    $('#close-btn').click(function(e) {
+        $(e.target.parentElement.parentElement).closeModal();
+    });
+</script>

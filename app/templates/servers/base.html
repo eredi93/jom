@@ -1,0 +1,70 @@
+{% extends 'index.html' %}
+{% block main_content %}
+<div class="row">
+    <div class="col s12">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Manage servers</span>
+                <table class="responsive-table highlight centered">
+                    <thead>
+                        <tr>
+                            <th data-field="name">Name</th>
+                            <th data-field="host_port">Host:Port</th>
+                            <th data-field="actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for server in servers %}
+                        <tr>
+                            <td>{{ server.name }}</td>
+                            <td>{{ server.host }}:{{ server.port }}</td>
+                            <td>
+                                <div>
+                                    <a id="{{ server.name }}" data-target="delete-server-modal" class="btn-floating red delete-server-trigger" title="Delete"><i class="material-icons">delete</i></a>
+                                    <a id="{{ server.name }}" data-target="edit-server-modal" class="btn-floating green edit-server-trigger" title="Edit"><i class="fa fa-pencil"></i></a>
+                                    <a id="{{ server.name }}" data-target="info-server-modal" class="btn-floating cyan info-server-trigger" title="Info"><i class="material-icons">info</i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-action">
+                <button data-target="create-server-modal" class="btn orange waves-effect waves-light create-server-trigger">Create Server</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Structure -->
+<div id="create-server-modal" class="modal"></div>
+<div id="delete-server-modal" class="modal"></div>
+<div id="edit-server-modal" class="modal"></div>
+<div id="info-server-modal" class="modal"></div>
+{% endblock %}
+{% block js %}
+<script>
+$(document).ready(function() {
+    $('.create-server-trigger').leanModal({
+        ready: function() { $('#create-server-modal').load('{{ url_for('servers.create') }}'); },
+        complete: function() { location.reload(); }
+    });
+    $('.delete-server-trigger').leanModal({complete: function() { location.reload(); }}).on('click', function(e) {
+        var server = e.currentTarget.id;
+        $('#delete-server-modal').empty().load('{{ url_for('servers.delete') }}?server=' + server)
+    });
+    $('.edit-server-trigger').leanModal({complete: function() { location.reload(); }}).on('click', function(e) {
+        var server = e.currentTarget.id;
+        $('#edit-server-modal').empty().load('{{ url_for('servers.edit') }}?server=' + server)
+    });
+    $('.info-server-trigger').leanModal({complete: function() { location.reload(); }}).on('click', function(e) {
+        var server = e.currentTarget.id;
+        $('#info-server-modal').empty().load('{{ url_for('servers.info') }}?server=' + server)
+    });
+
+    $(".button-collapse").sideNav();
+    $('select').material_select();
+
+});
+</script>
+{% endblock %}

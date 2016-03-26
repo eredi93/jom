@@ -1,3 +1,200 @@
 {% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block main %}
+<header>
+    <div class="navbar-fixed">
+        <nav>
+          <div class="nav-wrapper">
+              <a href="javascript:void(0)" class="brand-logo"><img src="{{ url_for('static', filename='img/logo/jom_w_80x220.png') }}"></a>
+              <a href="" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+          </div>
+        </nav>
+    </div>
+    <ul id="nav-mobile" class="side-nav fixed collapsible" data-collapsible="accordion">
+        <li class="logo gravatar-container">
+            <div class="gravatar">
+                <img src="{{ current_user.email | gravatar }}">
+            </div>
+            <div class="username">
+                <a class="btn-flat dropdown-button waves-effect waves-light white-text profile-btn" href="#" data-activates="profile-dropdown">{{ current_user.username }}<i class="mdi-navigation-arrow-drop-down right"></i></a>
+                <ul id="profile-dropdown" class="dropdown-content" style="width: 128px; position: absolute; top: 57px; left: 101px; opacity: 1; display: none;">
+                    <li class="{% if active_page == 'profile' %}active-tab{% endif %}"><a href="{{ url_for('users.my_profile') }}" class="profile-link"><i class="material-icons profile-menu">perm_identity</i>Profile</a></li>
+                    <li><a href="{{ url_for('users.logout') }}" class="profile-link"><i class="material-icons profile-menu">settings_power</i>Logout</a></li>
+                </ul>
+                <p class="user-roal">{% if current_user.is_admin %}Administrator{% endif %}</p>
+            </div>
+        </li>
+        <li class="{% if active_page == 'index' %}active-tab{% endif %}"><a href="{{ url_for('index') }}"><i class="material-icons navbar-icon">today</i>Dashboard</a></li>
+        <li class="{% if active_page == 'users' %}active-tab{% endif %}"><a href="{{ url_for('users.users') }}"><i class="material-icons navbar-icon">person_pin</i>Users</a></li>
+        {% if current_user.is_admin %}
+        <li class="{% if active_page == 'servers_dashboard' or active_page == 'servers_profiles' or active_page == 'easyrsa_profiles'%}active-tab active{% endif %}">
+            <a class="collapsible-header {% if active_page == 'servers_dashboard' or active_page == 'servers_profiles' or active_page == 'easyrsa_profiles'%}active{% endif %}"><i class="fa fa-server"></i>Servers</a>
+            <div class="collapsible-body">
+                <ul>
+                    <li class="{% if active_page == 'servers_dashboard' %}active-tab-collapse{% endif %}">
+                        <a href="{{ url_for('servers.servers') }}">Dashboard</a>
+                    </li>
+                    <li class="{% if active_page == 'servers_profiles' %}active-tab-collapse{% endif %}">
+                        <a href="{{ url_for('servers.profiles') }}">Profiles</a>
+                    </li>
+                    <li class="{% if active_page == 'easyrsa_profiles' %}active-tab-collapse{% endif %}">
+                        <a href="{{ url_for('servers.easyrsa') }}">EasyRSA</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="{% if active_page == 'clients' %}active-tab{% endif %}"><a href="{{ url_for('clients.clients') }}"><i class="material-icons navbar-icon">vpn_key</i>Certificates</a></li>
+        {% endif %}
+    </ul>
+</header>
+<main>
+<div class="flash-container">{% with messages = get_flashed_messages(with_categories=True) %}{% if messages %}{% for category, message in messages %}
+    <div class="flash {{ category }}" id="flash-message">
+        <a href="javascript:void(0)" class="flash-dismiss"><i class="fa fa-times fa-lg"></i></a>
+        <h3>{{message}}</h3>
+    </div>
+{% endfor %}{% endif %}{% endwith %}</div>
+<div class="container">
+{% block main_content %}
+    <div class="row">
+    {% for server in servers %}
+        <div class="col s{{ mdl_cell }}">
+            <div class="card">
+                <div class="card-image server-card-img {% if server.status %}light-green lighten-4{% else %}ffcdd2 red lighten-4{% endif %}">
+                    <img src="{{ url_for('static', filename='img/logo/logo_bw_80x80.png') }}" alt="JOM" />
+                </div>
+                <div class="server-card-info">
+                    <h4>{{ server.name }}</h4>
+                    <ul>
+                        <li>Server Host:</li>
+                        <li>Connected User:</li>
+                        <li>Update Time:</li>
+                    </ul>
+                    <ul>
+                        <li>{{ server.host }}:{{ server.port }}</li>
+                        <li>{{ server.connected }}</li>
+                        <li>{{ server.update_time }}</li>
+                    </ul>
+                </div>
+                <div class="card-action">
+                {% if current_user.is_admin %}
+                    <form action="{{ url_for('servers.start_stop') }}" method="post" autocomplete="off">
+                        {{ form.csrf_token }}
+                        <input id="action" name="action" type="hidden" value="{% if server.status %}stop{% else %}start{% endif %}">
+                        <input id="server_name" name="server_name" type="hidden" value="{{ server.name }}">
+                        <button class="btn waves-effect waves-light orange" type="submit">
+                            <i class="material-icons right">power_settings_new</i>{% if server.status %}Stop{% else %}Start{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="row">
+                        <div class="input-field col m3 s5">
+                            <select name="ovpn-server" id="ovpn-server">
+                                <option value="" disabled selected>Select one</option>
+                            {% for server in servers %}
+                                <option value="{{ server.name }}">{{ server.name }}</option>
+                            {% endfor %}
+                            </select>
+                            <label for="ovpn-server">Server</label>
+                        </div>
+                        <div class="input-field col m9 s6">
+                        {% if current_user.is_admin %}
+                            <button class="btn waves-effect waves-light orange right" id="refresh"><i class="material-icons right">loop</i>Refresh</button>
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table id="clients-table" class="display col l12" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>OpenVPN IP</th>
+                                <th>Public IP</th>
+                                <th>Byte received</th>
+                                <th>Byte sent</th>
+                                <th>Connected since</th>
+                                <th>Last reference</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+</div>
+</main>
+{% endblock %}
 
-{% block main %}INDEX{% endblock %}
+{% block js %}
+<script>
+$(document).ready(function() {
+
+    $('#clients-table').DataTable({
+        "bProcessing": true,
+        "bDeferRender": true,
+        "iDisplayLength": 10,
+        "aoColumns": [
+            {'mData': 'client'},
+            {'mData': 'ovpn_ip'},
+            {'mData': 'public_ip'},
+            {'mData': 'byte_received'},
+            {'mData': 'byte_sent'},
+            {'mData': 'connected_since'},
+            {'mData': 'last_ref'}
+        ],
+        responsive: true,
+        "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            if (aData['connected'] == 0) {
+                $('td', nRow).css('background-color', '#ffcdd2');
+            }
+        }
+    });
+
+    function get_client_info() {
+        var server = $('#ovpn-server').val();
+        $.getJSON('{{ url_for('servers.client_data') }}?server=' + server, function (data) {
+            $('#clients-table').dataTable().fnClearTable();
+            $('#clients-table').dataTable().fnAddData(data.aData);
+        });
+    }
+
+    $('#ovpn-server').change(function () {
+        get_client_info()
+    });
+
+    $('#refresh').click(function () {
+        get_client_info()
+    });
+
+    // fix select number row style
+    $('#clients-table_length').empty().addClass('input-field col s3').html(
+        '<select name="clients-table_length" aria-controls="clients-table" class="">' +
+        '<option value="10">10</option>' +
+        '<option value="25">25</option>' +
+        '<option value="50">50</option>' +
+        '<option value="100">100</option>' +
+        '</select>' +
+        '<label>Number of entries</label>'
+    );
+    $('#clients-table_filter').addClass('col m5 offset-m4 s12');
+    $('#clients-table_info').addClass('col m5 s12');
+    $('#clients-table_paginate').addClass('col m5 offset-m2 s12 right');
+
+    $(".button-collapse").sideNav();
+    $('select').material_select();
+
+} );
+</script>
+{% endblock %}

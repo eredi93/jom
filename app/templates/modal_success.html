@@ -1,0 +1,13 @@
+<div class="modal-content">
+    <h4>Success!</h4>
+    <p>{{ message }}</p>
+</div>
+<div class="modal-footer">
+    <a id="close-btn" class="btn orange waves-effect waves-light">Close</a>
+</div>
+<script>
+    $('#close-btn').click(function(e) {
+        $(e.target.parentElement.parentElement).closeModal();
+        location.reload();
+    });
+</script>

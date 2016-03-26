@@ -2,7 +2,7 @@
 
 import time
 import logging
-from .database import DATABASE, Model, PrimaryKeyField, DateTimeField, \
+from app.database import DATABASE, Model, PrimaryKeyField, DateTimeField, \
                          CharField, TextField
 
 

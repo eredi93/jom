@@ -12,8 +12,8 @@ from flask.ext.login import login_user, logout_user, login_required,\
     current_user
 from flask.ext.bcrypt import check_password_hash
 from functools import wraps
-from .models import Users
-from .forms import LoginForm, MyProfileForm, PasswordForm, RegisterForm, \
+from app.users.models import Users
+from app.users.forms import LoginForm, MyProfileForm, PasswordForm, RegisterForm, \
     ManageUserForm
 
 

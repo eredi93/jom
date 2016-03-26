@@ -1,0 +1,85 @@
+{% extends 'index.html' %}
+{% block main_content %}
+<div class="row">
+    <div class="col s12 m6">
+        <div class="card">
+            <form action="{{ url_for('servers.easyrsa') }}" method="post" autocomplete="off">
+                <div class="card-content">
+                    <span class="card-title">Create EasyRSA profile</span>
+                    <div class="row">
+                    {{ form.csrf_token }}
+                    {% for field in form %}
+                    {% if field.name != "csrf_token" %}
+                        <div class="input-field col s12">
+                            {% if field.errors %}{{ field(class="invalid") }}{% else %}{{ field(class="") }}{% endif %}
+                            <label for="{{ field.id }}">{{ field.label.text }}</label>
+                            {% if field.errors %}<span class="error-message">{% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+                <div class="card-action">
+                    <div class="row">
+                        <button class="btn orange waves-effect waves-light right" type="submit">Create<i class="material-icons right">send</i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col s12 m6">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">EasyRSA Profiles</span>
+                {% if easyrsa %}
+                <table class="responsive-table highlight centered">
+                    <thead>
+                        <tr>
+                            <th data-field="name">Name</th>
+                            <th data-field="actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for profile in easyrsa %}
+                        <tr>
+                            <td>{{ profile.profile_name }}</td>
+                            <td>
+                                <div>
+                                    <a id="{{ profile.id }}" data-target="delete-profile-modal" class="btn-floating red delete-profile-trigger" title="Delete"><i class="material-icons">delete</i></a>
+                                    <a id="{{ profile.id }}" data-target="info-profile-modal" class="btn-floating cyan info-profile-trigger" title="Info"><i class="material-icons">info</i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No profiles found</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Structure -->
+<div id="delete-profile-modal" class="modal"></div>
+<div id="info-profile-modal" class="modal"></div>
+{% endblock %}
+{% block js %}
+<script>
+$(document).ready(function() {
+
+    $('.delete-profile-trigger').leanModal({complete: function() { location.reload(); }}).on('click', function(e) {
+        var profile = e.currentTarget.id;
+        $('#delete-profile-modal').empty().load('{{ url_for('servers.easyrsa_delete') }}?profile=' + profile)
+    });
+    $('.info-profile-trigger').leanModal({complete: function() { location.reload(); }}).on('click', function(e) {
+        var profile = e.currentTarget.id;
+        $('#info-profile-modal').empty().load('{{ url_for('servers.easyrsa_info') }}?profile=' + profile)
+    });
+
+    $(".button-collapse").sideNav();
+    $('select').material_select();
+
+});
+</script>
+{% endblock %}

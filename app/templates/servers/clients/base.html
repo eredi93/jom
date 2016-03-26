@@ -1,0 +1,102 @@
+{% extends 'index.html' %}
+{% block main_content %}
+    <div class="row">
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="row">
+                        <div class="input-field col m3 s5">
+                            <select name="ovpn-server" id="ovpn-server">
+                                <option value="" disabled selected>Select one</option>
+                            {% for server in servers %}
+                                <option value="{{ server.name }}">{{ server.name }}</option>
+                            {% endfor %}
+                            </select>
+                            <label for="ovpn-server">Server</label>
+                        </div>
+                        <div class="input-field col m9 s6">
+                        {% if current_user.is_admin %}
+                            <button class="btn waves-effect waves-light orange right" id="refresh"><i class="material-icons right">note_add</i>Create</button>
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table id="clients-table" class="display col l12" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+<script>
+$(document).ready(function() {
+
+    $('#clients-table').DataTable({
+        "bProcessing": true,
+        "bDeferRender": true,
+        "iDisplayLength": 10,
+        "aoColumns": [
+            {'mData': 'client'},
+            {'mData': 'creation_date'},
+            {'mData': 'actions'}
+        ],
+        responsive: true,
+        "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            if (aData['revoked'] == 1) {
+                $('td', nRow).css('background-color', '#ffcdd2');
+            }
+            $('td:eq(8)', nRow).html(
+                '<div>' +
+                    '<a id="'+ aData['id'] +'" data-target="delete-server-modal" class="btn-floating red delete-server-trigger" title="Delete"><i class="material-icons">delete</i></a>' +
+                    '<a id="'+ aData['id'] +'" data-target="edit-server-modal" class="btn-floating green edit-server-trigger" title="Edit"><i class="fa fa-pencil"></i></a>' +
+                    '<a id="'+ aData['id'] +'" data-target="info-server-modal" class="btn-floating cyan info-server-trigger" title="Info"><i class="material-icons">info</i></a>' +
+                '</div>'
+            ).addClass('text-center');
+        }
+    });
+
+    function get_client_info() {
+        var server = $('#ovpn-server').val();
+        $.getJSON('{{ url_for('certificates.get_certificates') }}?server=' + server, function (data) {
+            $('#clients-table').dataTable().fnClearTable();
+            $('#clients-table').dataTable().fnAddData(data.aData);
+        });
+    }
+
+    $('#ovpn-server').change(function () {
+        get_client_info()
+    });
+
+    $('#refresh').click(function () {
+        get_client_info()
+    });
+
+    // fix select number row style
+    $('#clients-table_length').empty().addClass('input-field col s3').html(
+        '<select name="clients-table_length" aria-controls="clients-table" class="">' +
+        '<option value="10">10</option>' +
+        '<option value="25">25</option>' +
+        '<option value="50">50</option>' +
+        '<option value="100">100</option>' +
+        '</select>' +
+        '<label>Number of entries</label>'
+    );
+    $('#clients-table_filter').addClass('col m5 offset-m4 s12');
+    $('#clients-table_info').addClass('col m5 s12');
+    $('#clients-table_paginate').addClass('col m5 offset-m2 s12 right');
+
+    $(".button-collapse").sideNav();
+    $('select').material_select();
+
+} );
+</script>
+{% endblock %}

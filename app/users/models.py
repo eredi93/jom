@@ -8,7 +8,7 @@
 
 from flask.ext.login import UserMixin
 from flask.ext.bcrypt import generate_password_hash, check_password_hash
-from ..database import DATABASE, Model, CharField, BooleanField, IntegrityError
+from app.database import DATABASE, Model, CharField, BooleanField, IntegrityError
 
 
 class Users(UserMixin, Model):

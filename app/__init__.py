@@ -5,6 +5,7 @@
 :license: MIT, see LICENSE for more details.
 
 """
+
 __version__ = '0.1-dev'
 
 # import App dependencies
@@ -14,10 +15,17 @@ from flask_wtf.csrf import CsrfProtect
 from config import config, str2bool
 from jinja2 import evalcontextfilter, Markup, escape
 from flask.ext.login import LoginManager, login_required
-from .database import DATABASE
-from .logger import init_logger_models
-from .users.models import Users, init_users_models
-from .users.controllers import users_mod
+from flask_gravatar import Gravatar
+from app.database import DATABASE
+from app.logger import init_logger_models
+from app.servers.models import Servers, init_servers_models
+from app.servers.forms import ServerStartStopForm
+from app.servers.controllers import servers_mod
+from app.users.models import Users, init_users_models
+from app.users.controllers import users_mod
+from app.servers.profiles.controllers import profiles_mod
+from app.servers.easyrsa.controllers import easyrsa_mod
+from app.servers.clients.controllers import clients_mod
 
 
 # init Flask app
@@ -51,6 +59,15 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'users.login'
 login_manager.login_message = ""
+gravatar = Gravatar(
+    app,
+    size=60,
+    rating='g',
+    default='retro',
+    force_default=False,
+    use_ssl=True,
+    base_url=None
+)
 
 
 @login_manager.user_loader
@@ -109,10 +126,6 @@ def not_found(error):
     return render_template('errors/500.html'), 500
 
 
-# Register blueprints
-app.register_blueprint(users_mod)
-
-
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
@@ -120,10 +133,31 @@ def index():
 
     :return: flask.render_template / flask.redirect
     """
-    return render_template('layout.html')
+    servers = Servers.select()
+    n_servers = servers.count()
+    if n_servers != 0:
+        mdl_cell = round(12 / n_servers)
+    else:
+        mdl_cell = 12
+    data = {
+        'active_page': 'index',
+        'servers': servers,
+        'mdl_cell': mdl_cell,
+        'form': ServerStartStopForm()
+    }
+    return render_template('index.html', **data)
+
+
+# Register blueprints
+app.register_blueprint(users_mod)
+app.register_blueprint(servers_mod)
+app.register_blueprint(profiles_mod)
+app.register_blueprint(easyrsa_mod)
+app.register_blueprint(clients_mod)
 
 
 # Init DB
 def init_db():
     init_logger_models()
     init_users_models()
+    init_servers_models()

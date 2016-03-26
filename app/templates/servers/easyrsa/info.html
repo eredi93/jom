@@ -1,0 +1,56 @@
+<div class="modal-content">
+    <h4>Profile info</h4>
+    <table class="striped">
+        <tbody>
+            <tr>
+                <th>Profile Name:</th>
+                <th>{{ profile.profile_name }}</th>
+            </tr>
+            <tr>
+                <th>EASY_RSA:</th>
+                <th>{{ profile.EASY_RSA }}</th>
+            </tr>
+            <tr>
+                <th>CA_EXPIRE:</th>
+                <th>{{ profile.CA_EXPIRE }}</th>
+            </tr>
+            <tr>
+                <th>KEY_EXPIRE:</th>
+                <th>{{ profile.KEY_EXPIRE }}</th>
+            </tr>
+            <tr>
+                <th>KEY_COUNTRY:</th>
+                <th>{{ profile.KEY_COUNTRY }}</th>
+            </tr>
+            <tr>
+                <th>KEY_PROVINCE:</th>
+                <th>{{ profile.KEY_PROVINCE }}</th>
+            </tr>
+            <tr>
+                <th>KEY_CITY:</th>
+                <th>{{ profile.KEY_CITY }}</th>
+            </tr>
+            <tr>
+                <th>KEY_ORG:</th>
+                <th>{{ profile.KEY_ORG }}</th>
+            </tr>
+            <tr>
+                <th>KEY_EMAIL:</th>
+                <th>{{ profile.KEY_EMAIL }}</th>
+            </tr>
+            <tr>
+                <th>KEY_NAME:</th>
+                <th>{{ profile.KEY_NAME }}</th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <a id="close-btn" class="btn orange waves-effect waves-light">Close</a>
+</div>
+<script>
+    $('#close-btn').click(function(e) {
+        $(e.target.parentElement.parentElement).closeModal();
+    });
+</script>
+

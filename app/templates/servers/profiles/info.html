@@ -1,0 +1,50 @@
+<div class="modal-content">
+    <h4>Profile info</h4>
+    <table class="striped">
+        <tbody>
+            <tr>
+                <th>Server Name:</th>
+                <th>{{ profile.name }}</th>
+            </tr>
+            <tr>
+                <th>Server Port:</th>
+                <th>{{ profile.port }}</th>
+            </tr>
+            <tr>
+                <th>Dev:</th>
+                <th>{{ profile.dev }}</th>
+            </tr>
+            <tr>
+                <th>Network:</th>
+                <th>{{ profile.network }}</th>
+            </tr>
+            <tr>
+                <th>Max Clients:</th>
+                <th>{{ profile.network }}</th>
+            </tr>
+            <tr>
+                <th>Management Host:</th>
+                <th>{{ profile.mgt_host }}</th>
+            </tr>
+            <tr>
+                <th>Management Port:</th>
+                <th>{{ profile.mgt_port }}</th>
+            </tr>
+        {% if profile.extra_options %}
+            <tr>
+                <th>Extra options:</th>
+                <th>{{ profile.extra_options|nl2br }}</th>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <a id="close-btn" class="btn orange waves-effect waves-light">Close</a>
+</div>
+<script>
+    $('#close-btn').click(function(e) {
+        $(e.target.parentElement.parentElement).closeModal();
+    });
+</script>
+
