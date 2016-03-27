@@ -29,7 +29,7 @@ def servers():
     :return: flask.render_template
     """
     return render_template(
-        'servers/base.html',
+        'servers/index.html',
         active_page='servers_dashboard',
         servers=Servers.select()
     )

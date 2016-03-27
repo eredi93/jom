@@ -10,27 +10,32 @@ __version__ = '0.1-dev'
 
 # import App dependencies
 import re
-from flask import Flask, flash, g, render_template
+from flask import Flask, flash, g, render_template, redirect, url_for
 from flask_wtf.csrf import CsrfProtect
 from config import config, str2bool
 from jinja2 import evalcontextfilter, Markup, escape
-from flask.ext.login import LoginManager, login_required
+from flask.ext.login import LoginManager, login_user, logout_user, login_required
+from flask.ext.bcrypt import check_password_hash
 from flask_gravatar import Gravatar
 from app.database import DATABASE
-from app.logger import init_logger_models
-from app.servers.models import Servers, init_servers_models
+from app.logger import Logger
+from app.servers.models import Servers, ArchiveServers, ServersSupervisor
 from app.servers.forms import ServerStartStopForm
 from app.servers.controllers import servers_mod
-from app.users.models import Users, init_users_models
+from app.users.models import Users
+from app.users.forms import LoginForm
 from app.users.controllers import users_mod
 from app.servers.profiles.controllers import profiles_mod
+from app.servers.profiles.models import ServersProfiles, ArchiveServersProfiles
 from app.servers.easyrsa.controllers import easyrsa_mod
+from app.servers.easyrsa.models import EasyRsa, ArchiveEasyRsa
 from app.servers.clients.controllers import clients_mod
+from app.servers.clients.models import Clients
 
 
 # init Flask app
 app = Flask(__name__)
-for key, val in config.items(section='APP',raw=True):
+for key, val in config.items(section='APP', raw=True):
     app.config[key.upper()] = str2bool(val)
 csrf = CsrfProtect(app)
 
@@ -42,8 +47,10 @@ _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 @app.template_filter()
 @evalcontextfilter
 def nl2br(eval_ctx, value):
-    result = u'\n\n'.join(u'<p>%s</p>' % p.replace('\n', '<br>\n') \
-        for p in _paragraph_re.split(escape(value)))
+    result = u'\n\n'.join(
+        u'<p>{}</p>'.format(p.replace('\n', '<br>\n'))
+        for p in _paragraph_re.split(escape(value))
+    )
     if eval_ctx.autoescape:
         result = Markup(result)
     return result
@@ -125,8 +132,41 @@ def not_found(error):
 def not_found(error):
     return render_template('errors/500.html'), 500
 
+@app.route('/login', methods=('GET', 'POST'))
+def login():
+    """Login view
 
-@app.route('/', methods=['GET', 'POST'])
+    :return:
+    """
+    form = LoginForm()
+    if form.validate_on_submit():
+        print()
+        user = Users.check_identifier(form.identifier.data)
+        if not user:
+            flash("Your email or password doesn't match!", "error")
+        else:
+            if check_password_hash(user.password, form.password.data):
+                login_user(user)
+                flash("You've been logged in!", "success")
+                return redirect(url_for('index'))
+            else:
+                flash("Your identifier or password doesn't match!", "error")
+    return render_template('users/login.html', form=form)
+
+
+@login_required
+@app.route('/logout', methods=('GET',))
+def logout():
+    """Logout view
+
+    :return: flask.redirect
+    """
+    logout_user()
+    flash("You've been logged out!", "success")
+    return redirect(url_for('users.login'))
+
+
+@app.route('/', methods=('GET', 'POST'))
 @login_required
 def index():
     """Index view
@@ -158,6 +198,26 @@ app.register_blueprint(clients_mod)
 
 # Init DB
 def init_db():
-    init_logger_models()
-    init_users_models()
-    init_servers_models()
+    DATABASE.connect()
+    DATABASE.create_tables([
+        Users,
+        Servers,
+        ArchiveServers,
+        ServersSupervisor,
+        EasyRsa,
+        ArchiveEasyRsa,
+        ServersProfiles,
+        ArchiveServersProfiles,
+        Clients,
+        Logger
+    ], safe=True)
+    try:
+        Users.create_user(
+            username='root',
+            email='root@example.com',
+            password='password',
+            admin=True
+        )
+    except ValueError:
+        pass
+    DATABASE.close()

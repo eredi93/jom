@@ -66,7 +66,7 @@ $(document).ready(function() {
 
     function get_client_info() {
         var server = $('#ovpn-server').val();
-        $.getJSON('{{ url_for('certificates.get_certificates') }}?server=' + server, function (data) {
+        $.getJSON('{{ url_for('clients.get') }}?server=' + server, function (data) {
             $('#clients-table').dataTable().fnClearTable();
             $('#clients-table').dataTable().fnAddData(data.aData);
         });

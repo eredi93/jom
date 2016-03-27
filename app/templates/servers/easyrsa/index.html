@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col s12 m6">
         <div class="card">
-            <form action="{{ url_for('servers.easyrsa') }}" method="post" autocomplete="off">
+            <form action="{{ url_for('easyrsa.index') }}" method="post" autocomplete="off">
                 <div class="card-content">
                     <span class="card-title">Create EasyRSA profile</span>
                     <div class="row">
@@ -70,11 +70,11 @@ $(document).ready(function() {
 
     $('.delete-profile-trigger').leanModal({complete: function() { location.reload(); }}).on('click', function(e) {
         var profile = e.currentTarget.id;
-        $('#delete-profile-modal').empty().load('{{ url_for('servers.easyrsa_delete') }}?profile=' + profile)
+        $('#delete-profile-modal').empty().load('{{ url_for('easyrsa.delete') }}?profile=' + profile)
     });
     $('.info-profile-trigger').leanModal({complete: function() { location.reload(); }}).on('click', function(e) {
         var profile = e.currentTarget.id;
-        $('#info-profile-modal').empty().load('{{ url_for('servers.easyrsa_info') }}?profile=' + profile)
+        $('#info-profile-modal').empty().load('{{ url_for('easyrsa.info') }}?profile=' + profile)
     });
 
     $(".button-collapse").sideNav();

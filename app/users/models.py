@@ -89,20 +89,3 @@ class Users(UserMixin, Model):
     def delete_user(cls, user_id):
         user_record = cls.delete().where(cls.id == user_id)
         return user_record.execute()
-
-
-# Setup the database table using Peewee
-def init_users_models():
-    """models init function"""
-    DATABASE.connect()
-    DATABASE.create_tables([Users], safe=True)
-    try:
-        Users.create_user(
-            username='root',
-            email='root@example.com',
-            password='password',
-            admin=True
-        )
-    except ValueError:
-        pass
-    DATABASE.close()

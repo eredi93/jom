@@ -123,11 +123,3 @@ def get_logger(logger_name, level='INFO'):
     else:
         pass
     return logger
-
-
-# Setup the database table using Peewee
-def init_logger_models():
-    """models init function"""
-    DATABASE.connect()
-    DATABASE.create_tables([Logger], safe=True)
-    DATABASE.close()

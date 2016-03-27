@@ -13,13 +13,13 @@ from .models import EasyRsa
 from .forms import EasyRSACreateForm, ManageEasyRSAForm
 
 
-easyrsa_mod = Blueprint('servers', __name__,  url_prefix='/servers/easyrsa')
+easyrsa_mod = Blueprint('easyrsa', __name__,  url_prefix='/servers/easyrsa')
 
 
 @easyrsa_mod.route('/', methods=('GET', 'POST'))
 @login_required
 @admin_required
-def easyrsa():
+def index():
     """EasyRSA profiles
 
     :return: flask.render_template / flask.redirect
@@ -42,7 +42,7 @@ def easyrsa():
         flash('EasyRSA: {} has been created.'.format(form.name.data), 'success')
         return redirect(url_for('servers.easyrsa'))
     return render_template(
-        'servers/easyrsa/base.html',
+        'servers/easyrsa/index.html',
         active_page='easyrsa_profiles',
         easyrsa=EasyRsa.select(),
         form=form
@@ -52,7 +52,7 @@ def easyrsa():
 @easyrsa_mod.route('/info', methods=('GET', 'POST'))
 @login_required
 @admin_required
-def easyrsa_info():
+def info():
     """Servers profiles
 
     :return: flask.render_template
@@ -64,7 +64,7 @@ def easyrsa_info():
 @easyrsa_mod.route('/delete', methods=('GET', 'POST'))
 @login_required
 @admin_required
-def easyrsa_delete():
+def delete():
     """Servers profiles
 
     :return: flask.render_template

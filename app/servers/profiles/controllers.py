@@ -12,13 +12,13 @@ from .models import ServersProfiles
 from .forms import ProfileCreateForm, ManageProfileForm
 
 
-profiles_mod = Blueprint('servers', __name__,  url_prefix='/servers/profiles')
+profiles_mod = Blueprint('profiles', __name__,  url_prefix='/servers/profiles')
 
 
 @profiles_mod.route('/', methods=('GET', 'POST'))
 @login_required
 @admin_required
-def profiles():
+def index():
     """Servers profiles
 
     :return: flask.render_template
@@ -38,7 +38,7 @@ def profiles():
         flash('Profile: {} has been created.'.format(form.name.data), 'success')
         return redirect(url_for('servers.profiles'))
     return render_template(
-        'servers/profiles/base.html',
+        'servers/profiles/index.html',
         active_page='servers_profiles',
         profiles=ServersProfiles.select(),
         form=form
@@ -48,7 +48,7 @@ def profiles():
 @profiles_mod.route('/info', methods=('GET', 'POST'))
 @login_required
 @admin_required
-def profile_info():
+def info():
     """Servers profiles
 
     :return: flask.render_template
@@ -60,7 +60,7 @@ def profile_info():
 @profiles_mod.route('/delete', methods=('GET', 'POST'))
 @login_required
 @admin_required
-def profile_delete():
+def delete():
     """Servers profiles
 
     :return: flask.render_template

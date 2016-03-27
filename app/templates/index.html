@@ -19,31 +19,33 @@
                 <a class="btn-flat dropdown-button waves-effect waves-light white-text profile-btn" href="#" data-activates="profile-dropdown">{{ current_user.username }}<i class="mdi-navigation-arrow-drop-down right"></i></a>
                 <ul id="profile-dropdown" class="dropdown-content" style="width: 128px; position: absolute; top: 57px; left: 101px; opacity: 1; display: none;">
                     <li class="{% if active_page == 'profile' %}active-tab{% endif %}"><a href="{{ url_for('users.my_profile') }}" class="profile-link"><i class="material-icons profile-menu">perm_identity</i>Profile</a></li>
-                    <li><a href="{{ url_for('users.logout') }}" class="profile-link"><i class="material-icons profile-menu">settings_power</i>Logout</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="profile-link"><i class="material-icons profile-menu">settings_power</i>Logout</a></li>
                 </ul>
                 <p class="user-roal">{% if current_user.is_admin %}Administrator{% endif %}</p>
             </div>
         </li>
         <li class="{% if active_page == 'index' %}active-tab{% endif %}"><a href="{{ url_for('index') }}"><i class="material-icons navbar-icon">today</i>Dashboard</a></li>
-        <li class="{% if active_page == 'users' %}active-tab{% endif %}"><a href="{{ url_for('users.users') }}"><i class="material-icons navbar-icon">person_pin</i>Users</a></li>
+        <li class="{% if active_page == 'users' %}active-tab{% endif %}"><a href="{{ url_for('users.index') }}"><i class="material-icons navbar-icon">person_pin</i>Users</a></li>
         {% if current_user.is_admin %}
-        <li class="{% if active_page == 'servers_dashboard' or active_page == 'servers_profiles' or active_page == 'easyrsa_profiles'%}active-tab active{% endif %}">
-            <a class="collapsible-header {% if active_page == 'servers_dashboard' or active_page == 'servers_profiles' or active_page == 'easyrsa_profiles'%}active{% endif %}"><i class="fa fa-server"></i>Servers</a>
+        <li class="{% if active_page == 'servers_dashboard' or active_page == 'servers_clients' or active_page == 'servers_profiles' or active_page == 'easyrsa_profiles'%}active-tab active{% endif %}">
+            <a class="collapsible-header {% if active_page == 'servers_dashboard' or active_page == 'servers_clients' or active_page == 'servers_profiles' or active_page == 'easyrsa_profiles'%}active{% endif %}"><i class="fa fa-server"></i>Servers</a>
             <div class="collapsible-body">
                 <ul>
                     <li class="{% if active_page == 'servers_dashboard' %}active-tab-collapse{% endif %}">
                         <a href="{{ url_for('servers.servers') }}">Dashboard</a>
                     </li>
+                    <li class="{% if active_page == 'servers_clients' %}active-tab-collapse{% endif %}">
+                        <a href="{{ url_for('clients.index') }}">Clients</a>
+                    </li>
                     <li class="{% if active_page == 'servers_profiles' %}active-tab-collapse{% endif %}">
-                        <a href="{{ url_for('servers.profiles') }}">Profiles</a>
+                        <a href="{{ url_for('profiles.index') }}">Profiles</a>
                     </li>
                     <li class="{% if active_page == 'easyrsa_profiles' %}active-tab-collapse{% endif %}">
-                        <a href="{{ url_for('servers.easyrsa') }}">EasyRSA</a>
+                        <a href="{{ url_for('easyrsa.index') }}">EasyRSA</a>
                     </li>
                 </ul>
             </div>
         </li>
-        <li class="{% if active_page == 'clients' %}active-tab{% endif %}"><a href="{{ url_for('clients.clients') }}"><i class="material-icons navbar-icon">vpn_key</i>Certificates</a></li>
         {% endif %}
     </ul>
 </header>

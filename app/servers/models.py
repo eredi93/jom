@@ -10,7 +10,6 @@ from app.database import DATABASE, Model, CharField, DateTimeField, \
     BooleanField, IntegrityError, ForeignKeyField, IntegerField
 from app.servers.profiles.models import ServersProfiles, ArchiveServersProfiles
 from app.servers.easyrsa.models import EasyRsa, ArchiveEasyRsa
-from app.servers.clients.models import Clients
 
 
 class ServersSupervisor(Model):
@@ -90,7 +89,6 @@ class Servers(Model):
 
     @classmethod
     def add_server(cls, name, profile_id, host, port, easy_rsa_id):
-
         try:
             cls.create(
                 name=name,
@@ -157,21 +155,3 @@ class ArchiveServers(Model):
         db_table = 'archive_servers'
         database = DATABASE
         order_by = ('name',)
-
-
-# Build the database:
-# This will setup the database using Peewee
-def init_servers_models():
-    """models init function"""
-    DATABASE.connect()
-    DATABASE.create_tables([
-        Servers,
-        ArchiveServers,
-        ServersSupervisor,
-        EasyRsa,
-        ArchiveEasyRsa,
-        ServersProfiles,
-        ArchiveServersProfiles,
-        Clients
-    ], safe=True)
-    DATABASE.close()
