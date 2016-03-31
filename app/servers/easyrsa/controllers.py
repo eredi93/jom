@@ -40,7 +40,7 @@ def index():
             organizational_unit=form.organizational_unit.data,
         )
         flash('EasyRSA: {} has been created.'.format(form.name.data), 'success')
-        return redirect(url_for('servers.easyrsa'))
+        return redirect(url_for('easyrsa.index'))
     return render_template(
         'servers/easyrsa/index.html',
         active_page='easyrsa_profiles',

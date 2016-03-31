@@ -22,7 +22,6 @@ class ServersProfiles(Model):
     max_client = IntegerField(default=240)
     mgt_host = CharField(max_length=15, default="127.0.0.1")
     mgt_port = IntegerField(default=7505)
-    mgt_passwd = CharField(default=None)
     extra_options = TextField()
 
     class Meta:

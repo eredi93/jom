@@ -100,7 +100,7 @@ def create():
     """
     form = ServerCreateForm()
     form.server_prof.choices = [(str(s.id), s.name) for s in ServersProfiles.select()]
-    form.easyrsa_prof.choices = [(str(e.id), e.name) for e in EasyRsa.select()]
+    form.easyrsa_prof.choices = [(str(e.id), e.profile_name) for e in EasyRsa.select()]
     if form.validate_on_submit():
         Servers.add_server(
             name=form.name.data,

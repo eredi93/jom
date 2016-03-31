@@ -36,7 +36,7 @@ def index():
             extra_options=form.extra_options.data,
         )
         flash('Profile: {} has been created.'.format(form.name.data), 'success')
-        return redirect(url_for('servers.profiles'))
+        return redirect(url_for('profiles.index'))
     return render_template(
         'servers/profiles/index.html',
         active_page='servers_profiles',
